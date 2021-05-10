@@ -12,7 +12,7 @@ export const BaseService = (url: string) => {
     return http.post(url, data);
   };
 
-  const update = (id: string, data: any): Promise<AxiosResponse<any>> => {
+  const update = (id?: string, data?: any): Promise<AxiosResponse<any>> => {
     return http.put(`${url}/${id}`, data);
   };
 

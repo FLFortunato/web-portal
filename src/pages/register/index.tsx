@@ -2,12 +2,17 @@ import { Avatar, Button, Grid, TextField, Typography } from "@material-ui/core";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import { useFormik } from "formik";
 import React from "react";
+import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import * as yup from "yup";
-import { registerUser } from "../../store/user/action";
+import { getAllUsers, registerUser } from "../../store/user/action";
 
 const RegisterPage = () => {
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(getAllUsers());
+  }, [dispatch]);
 
   const form = useFormik({
     initialValues: {

@@ -1,40 +1,43 @@
-import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
+import axios from "axios";
 
 export const HttpService = () => {
-  const baseURL = process.env.BASE_URL;
+  axios.interceptors.request.use(
+    async (config) => {
+      const token = localStorage.getItem("@token");
+      config.headers.Authorization = `Bearer ${token}`;
+      // OR config.headers.common['Authorization'] = `Bearer ${your_token}`;
+      config.baseURL = "http://localhost:8080/api/v1/";
 
-  const getInstance = () => {
-    const config: AxiosRequestConfig = {
-      baseURL: "http://localhost:8080/api/v1/",
-      timeout: 30000,
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "auth-token": "",
-      },
-    };
+      return config;
+    },
+    (error) => {
+      return console.log(error);
+    }
+  );
 
-    const connection = axios.create(config);
+  axios.interceptors.response.use(
+    (e) => {
+      return e;
+    },
+    async (error) => {
+      const oldToken = await localStorage.getItem("@token");
 
-    return connection;
+      if (error.response.data.statusCode === 401) {
+        const newToken = await axios.put(
+          "http://localhost:8080/api/v1/token/refresh",
+          { oldToken }
+        );
+
+        localStorage.setItem("@token", newToken.data.access_token);
+        return axios.request(error.config);
+      }
+    }
+  );
+
+  return {
+    get: axios.get,
+    put: axios.put,
+    post: axios.post,
+    remove: axios.delete,
   };
-
-  const instance = getInstance();
-
-  const get = (url: string, params?: any): Promise<AxiosResponse<any>> => {
-    return instance.get(url, { params });
-  };
-
-  const put = (url: string, data?: any): Promise<AxiosResponse<any>> => {
-    return instance.put(url, data);
-  };
-
-  const post = (url: string, data: any): Promise<AxiosResponse<any>> => {
-    return instance.post(url, data);
-  };
-
-  const remove = (url: string): Promise<AxiosResponse<any>> => {
-    return instance.delete(url);
-  };
-
-  return { get, put, post, remove };
 };

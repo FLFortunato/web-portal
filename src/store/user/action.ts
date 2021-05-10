@@ -14,7 +14,7 @@ export const getAllUsers = () => {
 export const registerUser = (data: any) => {
   return async (dispatch: Function) => {
     try {
-      const create = UserService().create(data);
+      await UserService().create(data);
       dispatch({});
     } catch (error) {}
   };
