@@ -9,6 +9,11 @@ export const PrivateRoute = ({ component: Component, ...rest }: any) => {
   const decoded: any = hasToken && jwtDecode(hasToken || "");
 
   useEffect(() => {
+    if (!hasToken) {
+      setIsValid(false);
+    }
+
+    //Refresh token logic: When switching pages, we will check if the token is expired, is so, we trigger the refreshToken process
     (async () => {
       try {
         if (decoded && new Date(decoded.exp * 1000) < new Date()) {
@@ -22,7 +27,6 @@ export const PrivateRoute = ({ component: Component, ...rest }: any) => {
             "@token",
             newToken.data.access_token || ""
           );
-          console.log(newToken, "--------");
         }
       } catch (error) {
         setIsValid(false);

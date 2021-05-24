@@ -1,22 +1,55 @@
+import { AppBar, Button, Grid, Toolbar } from "@material-ui/core";
 import React, { useCallback } from "react";
-
-import { AppBar, Toolbar } from "@material-ui/core";
-import { Grid, Button } from "@material-ui/core";
+import { useHistory } from "react-router-dom";
+import { TokenService } from "../../services/token.service";
+import Logo from "../../assets/logo.png";
 
 const Header = ({ props }: any) => {
-  const handleLogout = useCallback(() => {}, []);
+  const history = useHistory();
+  const handleLogout = useCallback(async () => {
+    const token = await localStorage.getItem("@token");
+
+    if (token) {
+      await localStorage.removeItem("@token");
+      await TokenService().logout(token);
+      history.push("/login");
+    }
+  }, [history]);
+
   return (
-    <AppBar color="primary">
-      <Toolbar>
-        <Grid container justify="space-between">
-          <Grid item>opa</Grid>
-          <Grid item>opa</Grid>
-          <Grid item>
-            <Button onClick={() => console.log("Deu")}>Logout</Button>
+    <React.Fragment>
+      <AppBar color="primary" position="sticky">
+        <Toolbar>
+          <Grid container justify="space-between" alignItems="center">
+            <Grid item>
+              <img src={Logo} alt="logo" style={{ width: 80, height: 80 }} />
+            </Grid>
+            <Grid item lg={8}>
+              <Grid container justify="space-around">
+                <Button color="secondary" variant="text">
+                  Home
+                </Button>
+                <Button color="secondary" variant="text">
+                  About
+                </Button>
+                <Button color="secondary" variant="text">
+                  Contact
+                </Button>
+              </Grid>
+            </Grid>
+            <Grid item>
+              <Button
+                color="secondary"
+                variant="outlined"
+                onClick={handleLogout}
+              >
+                Logout
+              </Button>
+            </Grid>
           </Grid>
-        </Grid>
-      </Toolbar>
-    </AppBar>
+        </Toolbar>
+      </AppBar>
+    </React.Fragment>
   );
 };
 

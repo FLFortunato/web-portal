@@ -23,6 +23,7 @@ const LoginPage = () => {
       AuthService()
         .login(values)
         .then((res) => {
+          localStorage.setItem("@info", res.data.info);
           localStorage.setItem("@token", res.data.access_token);
           history.push("/");
         });
